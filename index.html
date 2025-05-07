@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fliqpay Online Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f4f6f9 0%, #e0e4e9 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #1e3a8a;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .header img {
+            width: 40px;
+            height: 40px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 500;
+        }
+        .header .nav {
+            display: flex;
+            gap: 20px;
+        }
+        .header .nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .header .nav a:hover {
+            color: #facc15;
+        }
+        .lock-icon::before {
+            content: '🔒';
+            margin-right: 5px;
+        }
+        .login-container, .main-container {
+            max-width: 700px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            border-top: 5px solid #1e3a8a;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .login-container {
+            text-align: center;
+            background: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;
+            background-color: rgba(255, 255, 255, 0.95);
+            background-blend-mode: overlay;
+        }
+        .login-container h2 {
+            color: #1e3a8a;
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+        .login-container input:focus {
+            border-color: #1e3a8a;
+            outline: none;
+        }
+        .login-container button {
+            background: linear-gradient(to right, #1e3a8a, #3b82f6);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .login-container button:hover {
+            background: linear-gradient(to right, #172554, #2563eb);
+        }
+        .login-error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        .main-container {
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .main-container h1 {
+            text-align: center;
+            color: #1e3a8a;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #1e3a8a;
+            font-size: 16px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            background: #f9fafb;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+            outline: none;
+        }
+        .form-group::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 38px;
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .form-group button {
+            background: linear-gradient(to right, #1e3a8a, #3b82f6);
+            color: #fff;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .form-group button:hover {
+            background: linear-gradient(to right, #172554, #2563eb);
+            transform: translateY(-2px);
+        }
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .receipt {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #ffffff;
+            border: 2px solid #1e3a8a;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: visible;
+        }
+        .receipt::before {
+            content: 'FliqPay';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 50px;
+            font-weight: 700;
+            color: rgba(30, 58, 138, 0.05);
+            z-index: 0;
+        }
+        .receipt-content {
+            position: relative;
+            z-index: 1;
+        }
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #1e3a8a;
+        }
+        .receipt-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        .receipt h2 {
+            color: #1e3a8a;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .receipt .tagline {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 5px 0 0;
+        }
+        .receipt-details {
+            margin: 20px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .receipt-details p {
+            margin: 0;
+            padding: 12px 15px;
+            font-size: 16px;
+            color: #111827;
+            display: flex;
+            justify-content: space-between;
+            background: #fff;
+        }
+        .receipt-details p:nth-child(even) {
+            background: #f9fafb;
+        }
+        .receipt .label {
+            font-weight: 500;
+            color: #1e3a8a;
+            flex: 1;
+        }
+        .receipt .value {
+            flex: 1;
+            text-align: right;
+            font-weight: 400;
+        }
+        .amount {
+            text-align: center;
+            background: linear-gradient(135deg, #e6f0ff 0%, #dbeafe 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #1e3a8a;
+        }
+        .amount h3 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+        .success {
+            color: #15803d;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            background: #dcfce7;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #15803d;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .receipt-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .receipt-footer img.qr-code {
+            width: 60px;
+            height: 60px;
+            margin-top: 10px;
+        }
+        .pdf-button {
+            background: linear-gradient(to right, #15803d, #22c55e);
+            margin-top: 20px;
+        }
+        .pdf-button:hover {
+            background: linear-gradient(to right, #14532d, #16a34a);
+            transform: translateY(-2px);
+        }
+        .footer {
+            background: #1e3a8a;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #facc15;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .secure-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #15803d;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #1e3a8a;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .header, .footer, .form-group, .pdf-button, .login-container, .secure-badge, .loading {
+                display: none !important;
+            }
+            .main-container {
+                display: block;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                border: none;
+            }
+            .receipt {
+                display: block;
+                border: 1px solid #1e3a8a;
+                padding: 20px;
+                margin: 0;
+                background: #fff;
+            }
+            .receipt::before {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="fliqpay-seeklogo.svg" alt="SecurePay Icon">
+            <h1><span class="lock-icon"></span>FliqPay</h1>
+        </div>
+        <div class="nav">
+            <a href="#">Home</a>
+            <a href="#">Accounts</a>
+            <a href="#">Transfers</a>
+            <a href="#">Support</a>
+        </div>
+    </div>
+    <div class="login-container" id="loginContainer">
+        <h2>Secure Login</h2>
+        <input type="password" id="passwordInput" placeholder="Enter your password">
+        <button onclick="checkPassword()">Login</button>
+        <p id="loginError" class="login-error">Incorrect password. Please try again.</p>
+    </div>
+    <div class="main-container" id="mainContainer">
+        <h1>Fliqpay Online Transfer</h1>
+        <div class="form-group">
+            <label for="accountNumber">Sender's Account Number</label>
+            <input type="text" id="accountNumber" placeholder="1234567890" maxlength="10">
+            <p id="accountError" class="error">Please enter a valid 10-digit account number.</p>
+        </div>
+        <div class="form-group">
+            <label for="receiverName">Receiver's Account Name</label>
+            <input type="text" id="receiverName" placeholder="">
+            <p id="receiverError" class="error">Please enter a valid receiver name.</p>
+        </div>
+        <div class="form-group">
+            <label for="receiverBank">Receiver's Bank</label>
+            <select id="receiverBank">
+                <option value="" disabled selected>Select a bank</option>
+                <option value="Access Bank">Access Bank</option>
+                <option value="Citibank Nigeria">Citibank Nigeria</option>
+                <option value="Ecobank Nigeria">Ecobank Nigeria</option>
+                <option value="Fidelity Bank">Fidelity Bank</option>
+                <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+                <option value="First City Monument Bank (FCMB)">First City Monument Bank (FCMB)</option>
+                <option value="Globus Bank">Globus Bank</option>
+                <option value="Guaranty Trust Bank (GTBank)">Guaranty Trust Bank (GTBank)</option>
+                <option value="Heritage Bank">Heritage Bank</option>
+                <option value="Jaiz Bank">Jaiz Bank</option>
+                <option value="Keystone Bank">Keystone Bank</option>
+                <option value="Kuda Bank">Kuda Bank</option>
+                <option value="Lotus Bank">Lotus Bank</option>
+                <option value="Nova Merchant Bank">Nova Merchant Bank</option>
+                <option value="Optimis Bank">Optimis Bank</option>
+                <option value="Parallex Bank">Parallex Bank</option>
+                <option value="Polaris Bank">Polaris Bank</option>
+                <option value="PremiumTrust Bank">PremiumTrust Bank</option>
+                <option value="Providus Bank">Providus Bank</option>
+                <option value="Rand Merchant Bank">Rand Merchant Bank</option>
+                <option value="Signature Bank">Signature Bank</option>
+                <option value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
+                <option value="Standard Chartered Bank">Standard Chartered Bank</option>
+                <option value="Sterling Bank">Sterling Bank</option>
+                <option value="Suntrust Bank">Suntrust Bank</option>
+                <option value="Titan Trust Bank">Titan Trust Bank</option>
+                <option value="Union Bank of Nigeria">Union Bank of Nigeria</option>
+                <option value="United Bank for Africa (UBA)">United Bank for Africa (UBA)</option>
+                <option value="Unity Bank">Unity Bank</option>
+                <option value="Wema Bank">Wema Bank</option>
+                <option value="Zenith Bank">Zenith Bank</option>
+            </select>
+            <p id="bankError" class="error">Please select a bank.</p>
+        </div>
+        <div class="form-group">
+            <label for="transferAmount">Transfer Amount (₦)</label>
+            <input type="number" id="transferAmount" placeholder="e.g., 25000.00" step="0.01" min="1" max="10000000">
+            <p id="amountError" class="error">Please enter a valid amount (₦1 - ₦10,000,000).</p>
+        </div>
+        <div class="form-group">
+            <button onclick="generateReceipt()">Generate Receipt</button>
+        </div>
+        <div class="loading" id="loading">Processing...</div>
+        <div id="receipt" class="receipt">
+            <div class="receipt-content">
+                <div class="receipt-header">
+                    <img src="fliqpay-seeklogo.svg" alt="SecurePay Logo" class="receipt-logo">
+                    <div>
+                        <h2>Payment Receipt</h2>
+                        <p class="tagline">FliqPay - Your Trusted Financial Partner</p>
+                    </div>
+                </div>
+                <p class="success">Transaction Successful</p>
+                <div class="receipt-details">
+                    <p><span class="label">Transaction ID:</span><span class="value" id="receiptTransactionId"></span></p>
+                    <p><span class="label">Date:</span><span class="value" id="receiptDate"></span></p>
+                    <p><span class="label">Time:</span><span class="value" id="receiptTime"></span></p>
+                    <p><span class="label">Sender's Account Number:</span><span class="value" id="receiptAccount"></span></p>
+                    <p><span class="label">Sender's Name:</span><span class="value" id="accountHolder"></span></p>
+                    <p><span class="label">Receiver's Account Name:</span><span class="value" id="receiptReceiver"></span></p>
+                    <p><span class="label">Receiver's Bank:</span><span class="value" id="receiptBank"></span></p>
+                    <p><span class="label">Description:</span><span class="value">Money Transfer</span></p>
+                    <p><span class="label">Reference:</span><span class="value" id="receiptReference"></span></p>
+                    <p><span class="label">Amount:</span><span class="value" id="receiptAmount"></span></p>
+                </div>
+                <div class="amount">
+                    <h3 id="receiptAmountFormatted"></h3>
+                </div>
+                <div class="receipt-footer">
+                    <p>FliqPay Limited | RC 1234567</p>
+                    <p>Contact: support@securepay.com | Phone: +234 123 456 7890 | www.securepay.com</p>
+                    <p>This receipt is electronically generated and does not require a signature.</p>
+                    <img src="Screenshot_7-5-2025_125659_online-qr-generator.com.jpeg" alt="QR Code" class="qr-code">
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="pdf-button" onclick="saveAsPDF()">Save as PDF</button>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        © 2025 FliqPay. All rights reserved. | 
+        <a href="#">Privacy Policy</a> | 
+        <a href="#">Terms of Service</a> | 
+        <a href="#">Contact Us</a> | 
+        Licensed by CBN
+    </div>
+    <div class="secure-badge">
+        <span class="lock-icon"></span>Secure Connection
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        // Set your password here
+        const correctPassword = "ZION";
+
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput').value;
+            const loginError = document.getElementById('loginError');
+            const loginContainer = document.getElementById('loginContainer');
+            const mainContainer = document.getElementById('mainContainer');
+            const loading = document.getElementById('loading');
+
+            if (passwordInput === correctPassword) {
+                loginError.style.display = 'none';
+                loading.style.display = 'block';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    loginContainer.style.display = 'none';
+                    mainContainer.style.display = 'block';
+                }, 1000);
+            } else {
+                loginError.style.display = 'block';
+            }
+        }
+
+        function generateRandomId(prefix) {
+            const randomNum = Math.floor(1000000000 + Math.random() * 9000000000);
+            return `${prefix}-${randomNum}`;
+        }
+
+        function generateReceipt() {
+            const accountNumber = document.getElementById('accountNumber').value;
+            const receiverName = document.getElementById('receiverName').value;
+            const receiverBank = document.getElementById('receiverBank').value;
+            const transferAmount = document.getElementById('transferAmount').value;
+            const accountError = document.getElementById('accountError');
+            const receiverError = document.getElementById('receiverError');
+            const bankError = document.getElementById('bankError');
+            const amountError = document.getElementById('amountError');
+            const receipt = document.getElementById('receipt');
+            const loading = document.getElementById('loading');
+            const receiptAccount = document.getElementById('receiptAccount');
+            const accountHolder = document.getElementById('accountHolder');
+            const receiptReceiver = document.getElementById('receiptReceiver');
+            const receiptBank = document.getElementById('receiptBank');
+            const receiptDate = document.getElementById('receiptDate');
+            const receiptTime = document.getElementById('receiptTime');
+            const receiptAmount = document.getElementById('receiptAmount');
+            const receiptAmountFormatted = document.getElementById('receiptAmountFormatted');
+            const receiptTransactionId = document.getElementById('receiptTransactionId');
+            const receiptReference = document.getElementById('receiptReference');
+
+            // Validation
+            let isValid = true;
+            const accountRegex = /^\d{10}$/;
+            const nameRegex = /^[A-Za-z\s]{2,50}$/;
+            const amount = parseFloat(transferAmount);
+
+            if (!accountRegex.test(accountNumber)) {
+                accountError.style.display = 'block';
+                isValid = false;
+            } else {
+                accountError.style.display = 'none';
+            }
+
+            if (!nameRegex.test(receiverName)) {
+                receiverError.style.display = 'block';
+                isValid = false;
+            } else {
+                receiverError.style.display = 'none';
+            }
+
+            if (!receiverBank) {
+                bankError.style.display = 'block';
+                isValid = false;
+            } else {
+                bankError.style.display = 'none';
+            }
+
+            if (isNaN(amount) || amount < 1 || amount > 10000000) {
+                amountError.style.display = 'block';
+                isValid = false;
+            } else {
+                amountError.style.display = 'none';
+            }
+
+            if (!isValid) {
+                receipt.style.display = 'none';
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                receipt.style.display = 'block';
+
+                // Mock sender names
+                const mockNames = [
+                    'VICTOR NGO BLESSING',
+                    
+                ];
+                const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
+
+                // Current date and time (WAT, UTC+1)
+                const now = new Date();
+                const optionsDate = { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    timeZone: 'Africa/Lagos' 
+                };
+                const optionsTime = { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit', 
+                    hour12: false, 
+                    timeZone: 'Africa/Lagos' 
+                };
+                const formattedDate = now.toLocaleDateString('en-NG', optionsDate);
+                const formattedTime = now.toLocaleTimeString('en-NG', optionsTime) + ' WAT';
+
+                // Generate random Transaction ID and Reference
+                const transactionId = generateRandomId('TXN');
+                const reference = generateRandomId('REF');
+
+                // Format amount
+                const formattedAmount = '₦' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+                // Populate receipt
+                receiptAccount.textContent = accountNumber;
+                accountHolder.textContent = randomName;
+                receiptReceiver.textContent = receiverName;
+                receiptBank.textContent = receiverBank;
+                receiptDate.textContent = formattedDate;
+                receiptTime.textContent = formattedTime;
+                receiptAmount.textContent = formattedAmount;
+                receiptAmountFormatted.textContent = formattedAmount;
+                receiptTransactionId.textContent = transactionId;
+                receiptReference.textContent = reference;
+
+                // Scroll to receipt
+                receipt.scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+
+        function saveAsPDF() {
+            const receipt = document.getElementById('receipt');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            setTimeout(() => {
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: 'SecurePay_Receipt.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2, 
+                        useCORS: true,
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: receipt.scrollWidth,
+                        windowHeight: receipt.scrollHeight
+                    },
+                    jsPDF: { 
+                        unit: 'in', 
+                        format: 'a4', 
+                        orientation: 'portrait' 
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+                // Temporarily hide the PDF button
+                const pdfButton = document.querySelector('.pdf-button');
+                pdfButton.style.display = 'none';
+                html2pdf().set(opt).from(receipt).save().then(() => {
+                    pdfButton.style.display = 'block';
+                    loading.style.display = 'none';
+                });
+            }, 500);
+        }
+    </script>
+</body>
+</html>
